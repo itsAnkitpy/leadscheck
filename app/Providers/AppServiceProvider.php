@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\FeatureService;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->app->singleton(FeatureService::class, function () {
+            return new FeatureService();
+        });
+
+        Blade::if('feature', function ($key) {
+            return app(FeatureService::class)->has($key);
+        });
     }
 }
