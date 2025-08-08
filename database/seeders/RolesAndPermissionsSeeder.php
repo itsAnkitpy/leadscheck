@@ -15,20 +15,31 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run()
     {
-        // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        try {
+            // Reset cached roles and permissions
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // create permissions
-        Permission::create(['name' => 'create-lead']);
-        Permission::create(['name' => 'edit-lead']);
-        Permission::create(['name' => 'delete-lead']);
-        Permission::create(['name' => 'view-lead']);
+            // create permissions (only if they don't exist)
+            $permissions = [
+                'create-lead',
+                'edit-lead', 
+                'delete-lead',
+                'view-lead'
+            ];
 
-        // create roles and assign created permissions
-        $role = Role::create(['name' => 'admin']);
-        $role->givePermissionTo(Permission::all());
+            foreach ($permissions as $permission) {
+                Permission::firstOrCreate(['name' => $permission]);
+            }
 
-        $role = Role::create(['name' => 'user']);
-        $role->givePermissionTo(['view-lead']);
+            // create roles (only if they don't exist)
+            $adminRole = Role::firstOrCreate(['name' => 'admin']);
+            $adminRole->givePermissionTo(Permission::all());
+
+            $userRole = Role::firstOrCreate(['name' => 'user']);
+            $userRole->givePermissionTo(['view-lead']);
+        } catch (\Exception $e) {
+            // Log the error but don't fail the entire process
+            \Illuminate\Support\Facades\Log::error('Seeder error: ' . $e->getMessage());
+        }
     }
 }

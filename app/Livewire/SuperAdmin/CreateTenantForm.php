@@ -32,15 +32,11 @@ class CreateTenantForm extends Component
             'id' => $this->domain,
             'name' => $this->name,
             'plan' => $this->plan,
-            'data' => [
+            'admin_data' => json_encode([
                 'admin_name' => $this->admin_name,
                 'admin_email' => $this->admin_email,
                 'admin_password' => Hash::make($this->admin_password),
-            ],
-        ]);
-
-        $tenant->domains()->create([
-            'domain' => $this->domain . '.' . config('tenancy.central_domains')[0],
+            ]),
         ]);
 
         session()->flash('message', 'Tenant created successfully. Admin user is being provisioned.');
