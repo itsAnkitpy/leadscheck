@@ -21,9 +21,14 @@ class FeatureService
             return collect();
         }
 
-        return Cache::rememberForever('tenant:' . $this->tenant->id . ':features', function () {
+        try {
+            return Cache::rememberForever('tenant:' . $this->tenant->id . ':features', function () {
+                return $this->tenant->features()->pluck('key')->flip();
+            });
+        } catch (\BadMethodCallException $e) {
+            // Fallback for cache stores that don't support tagging
             return $this->tenant->features()->pluck('key')->flip();
-        });
+        }
     }
 
     public function has($key)

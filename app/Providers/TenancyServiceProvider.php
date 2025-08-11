@@ -76,6 +76,11 @@ class TenancyServiceProvider extends ServiceProvider
                     config([
                         'permission.cache.key' => "spatie.permission.cache.tenant_{$event->tenancy->tenant->getTenantKey()}",
                     ]);
+                    
+                    // Configure authentication to use tenant database
+                    config([
+                        'auth.providers.users.model' => \App\Models\User::class,
+                    ]);
                 },
             ],
 

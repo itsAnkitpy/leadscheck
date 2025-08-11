@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\SuperAdminLoginController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\TenantController;
@@ -19,7 +20,6 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 
-require __DIR__.'/auth.php';
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [SuperAdminLoginController::class, 'create'])->name('login')->middleware('guest:superadmin');
@@ -35,5 +35,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/impersonate/tenant/{tenant}', [TenantController::class, 'impersonate'])->name('tenant.impersonation');
         Route::get('/impersonate/leave', [TenantController::class, 'leaveImpersonation'])->name('tenant.impersonation.leave');
         Route::get('/custom-fields', CustomFieldManager::class)->name('custom-fields.index');
+        Route::get('/features', \App\Livewire\SuperAdmin\FeatureManager::class)->name('features.index');
     });
 });
+
+require __DIR__.'/auth.php';

@@ -21,7 +21,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             try {
                 $centralDomains = config('tenancy.central_domains');
                 if (!empty($centralDomains) && isset($centralDomains[0])) {
-                    $domain = $tenant->id . '.' . $centralDomains[0];
+                    // Use leadscheck.test as the base domain for cleaner URLs
+                    $domain = $tenant->id . '.leadscheck.test';
                     $tenant->domains()->create([
                         'domain' => $domain,
                     ]);

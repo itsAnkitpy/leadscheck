@@ -45,6 +45,11 @@ Route::middleware([
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
     })->name('tenant.impersonate');
 
+    // Add the missing impersonation leave route
+    Route::get('/impersonate/leave', function () {
+        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse(null);
+    })->name('impersonation.leave');
+
     Route::middleware(['auth', 'feature:feature_lead_management'])->group(function () {
         Route::get('leads', \App\Livewire\LeadList::class)->name('leads.index');
         Route::get('leads/create', \App\Livewire\LeadForm::class)->name('leads.create');

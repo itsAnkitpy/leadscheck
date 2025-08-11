@@ -16,25 +16,25 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            <div class="flex">
-                <!-- Sidebar -->
-                <aside class="w-64 bg-white shadow-md min-h-screen">
-                    @include('layouts.admin-navigation')
-                </aside>
+            <!-- Sidebar -->
+            @include('layouts.admin-navigation')
 
-                <!-- Main Content -->
-                <main class="flex-1 p-6">
-                    <!-- Page Heading -->
-                    @if (isset($header))
-                        <header class="bg-white shadow">
-                            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                                {{ $header }}
-                            </div>
-                        </header>
-                    @endif
+            <!-- Main Content -->
+            <div class="lg:pl-64">
+                <main class="py-6">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <!-- Page Heading -->
+                        @if (isset($header))
+                            <header class="bg-white shadow-sm rounded-lg mb-6">
+                                <div class="px-4 py-6 sm:px-6">
+                                    {{ $header }}
+                                </div>
+                            </header>
+                        @endif
 
-                    <!-- Page Content -->
-                    {{ $slot }}
+                        <!-- Page Content -->
+                        {{ $slot }}
+                    </div>
                 </main>
             </div>
         </div>

@@ -30,7 +30,26 @@ class LoginForm extends Form
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
+        // Get the current domain from the request
+        $domain = request()->getHost();
+        
+        // Find the tenant by domain
+        $tenant = \App\Models\Tenant::whereHas('domains', function($query) use ($domain) {
+            $query->where('domain', $domain);
+        })->first();
+
+        if (!$tenant) {
+            throw ValidationException::withMessages([
+                'form.email' => 'Tenant not found for domain: ' . $domain,
+            ]);
+        }
+
+        // Run authentication in tenant context
+        $success = $tenant->run(function () {
+            return Auth::attempt($this->only(['email', 'password']), $this->remember);
+        });
+
+        if (!$success) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
