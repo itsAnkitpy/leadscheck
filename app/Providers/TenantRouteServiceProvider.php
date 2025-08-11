@@ -26,8 +26,6 @@ class TenantRouteServiceProvider extends ServiceProvider
         $this->routes(function () {
             Route::middleware([
                 'web',
-                \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
-                \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
             ])
             ->group(base_path('routes/tenant.php'));
         });

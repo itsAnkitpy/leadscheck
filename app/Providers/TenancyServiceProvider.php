@@ -68,11 +68,17 @@ class TenancyServiceProvider extends ServiceProvider
             Events\DatabaseDeleted::class => [],
 
             // Tenancy events
-            Events\InitializingTenancy::class => [],
+            Events\InitializingTenancy::class => [
+                function (Events\InitializingTenancy $event) {
+                    \Illuminate\Support\Facades\Log::info('InitializingTenancy event fired for tenant: ' . $event->tenancy->tenant->id);
+                },
+            ],
             Events\TenancyInitialized::class => [
                 Listeners\BootstrapTenancy::class,
                 CheckTenantStatus::class,
                 function (Events\TenancyInitialized $event) {
+                    \Illuminate\Support\Facades\Log::info('TenancyInitialized event fired for tenant: ' . $event->tenancy->tenant->id);
+                    
                     config([
                         'permission.cache.key' => "spatie.permission.cache.tenant_{$event->tenancy->tenant->getTenantKey()}",
                     ]);
@@ -81,6 +87,13 @@ class TenancyServiceProvider extends ServiceProvider
                     config([
                         'auth.providers.users.model' => \App\Models\User::class,
                     ]);
+                    
+                    // Configure session to use tenant database
+                    config([
+                        'session.connection' => 'tenant',
+                    ]);
+                    
+                    \Illuminate\Support\Facades\Log::info('Tenant context configured - Database: ' . config('database.default') . ', Auth model: ' . config('auth.providers.users.model') . ', Session: ' . config('session.connection'));
                 },
             ],
 

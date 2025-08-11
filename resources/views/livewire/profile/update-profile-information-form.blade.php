@@ -16,8 +16,18 @@ new class extends Component
      */
     public function mount(): void
     {
-        $this->name = Auth::user()->name;
-        $this->email = Auth::user()->email;
+        // Get user from tenant context, fallback to session data if available
+        $user = Auth::user();
+        
+        // If we're in tenant context, use the tenant user data
+        if (config('database.default') === 'tenant' && $user) {
+            $this->name = $user->name;
+            $this->email = $user->email;
+        } else {
+            // Fallback to session data or default values
+            $this->name = session('tenant_user_name', $user ? $user->name : '');
+            $this->email = session('tenant_user_email', $user ? $user->email : '');
+        }
     }
 
     /**
@@ -39,6 +49,10 @@ new class extends Component
         }
 
         $user->save();
+
+        // Update session data to reflect the changes
+        session()->put('tenant_user_name', $user->name);
+        session()->put('tenant_user_email', $user->email);
 
         $this->dispatch('profile-updated', name: $user->name);
     }

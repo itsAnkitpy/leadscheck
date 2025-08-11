@@ -45,8 +45,32 @@ class LoginForm extends Form
         }
 
         // Run authentication in tenant context
-        $success = $tenant->run(function () {
-            return Auth::attempt($this->only(['email', 'password']), $this->remember);
+        $success = $tenant->run(function () use ($tenant) {
+            // Ensure we're using the tenant database for authentication
+            config(['database.default' => 'tenant']);
+            
+            $result = Auth::attempt($this->only(['email', 'password']), $this->remember);
+            
+            if ($result) {
+                // Get the authenticated user from tenant context
+                $user = Auth::user();
+                
+                // Log the authenticated user
+                \Illuminate\Support\Facades\Log::info('Authentication successful in tenant context - User: ' . $user->name . ' (ID: ' . $user->id . ')');
+                
+                // Store user data in session for proper context
+                session()->put('tenant_user_id', $user->id);
+                session()->put('tenant_user_name', $user->name);
+                session()->put('tenant_user_email', $user->email);
+                session()->put('tenant_id', $tenant->id);
+                
+                // Regenerate session to ensure clean state
+                session()->regenerate();
+            } else {
+                \Illuminate\Support\Facades\Log::info('Authentication failed in tenant context');
+            }
+            
+            return $result;
         });
 
         if (!$success) {

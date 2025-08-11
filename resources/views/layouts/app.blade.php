@@ -16,14 +16,6 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased">
-        @impersonating
-            <div class="bg-yellow-500 text-black px-4 py-2 text-center">
-                <strong>⚠️ You are impersonating {{ tenant('name') }}</strong>
-                <a href="{{ route('impersonation.leave') }}" class="ml-4 bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm font-medium">
-                    Leave Impersonation
-                </a>
-            </div>
-        @endimpersonating
         <div class="min-h-screen bg-gray-100">
             <livewire:layout.navigation />
 
